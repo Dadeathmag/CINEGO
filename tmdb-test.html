@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TMDB API Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .error {
+      color: red;
+      background: #ffe6e6;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+
+    .success {
+      color: green;
+      background: #e6ffe6;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+
+    .movie-item {
+      display: flex;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+
+    .movie-poster {
+      width: 60px;
+      height: 90px;
+      background: #f0f0f0;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+
+    .movie-info h4 {
+      margin: 0 0 5px 0;
+    }
+
+    .movie-info p {
+      margin: 2px 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    input {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>TMDB API Test Page</h1>
+
+  <div class="test-section">
+    <h2>API Configuration Test</h2>
+    <div id="configStatus">Testing configuration...</div>
+  </div>
+
+  <div class="test-section">
+    <h2>Direct API Test</h2>
+    <button onclick="testDirectAPI()">Test Direct API Call</button>
+    <div id="directAPIResult"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Movie Search Test</h2>
+    <input type="text" id="searchQuery" placeholder="Enter movie name" value="avengers">
+    <button onclick="testMovieSearch()">Search Movies</button>
+    <div id="searchResult"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Helper Function Test</h2>
+    <button onclick="testHelperFunctions()">Test Helper Functions</button>
+    <div id="helperResult"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    // Test configuration
+    function testConfig() {
+      const configDiv = document.getElementById('configStatus');
+      try {
+        if (typeof TMDB_CONFIG !== 'undefined') {
+          configDiv.innerHTML = `
+            <div class="success">
+              ✅ Configuration loaded successfully<br>
+              Base URL: ${TMDB_CONFIG.BASE_URL}
+            </div>
+          `;
+        } else {
+          configDiv.innerHTML = '<div class="error">❌ Configuration not loaded</div>';
+        }
+      } catch (error) {
+        configDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    // Test direct API call
+    async function testDirectAPI() {
+      const resultDiv = document.getElementById('directAPIResult');
+      resultDiv.innerHTML = 'Testing direct API call...';
+
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/tmdb/search/movie?query=avengers`);
+
+        if (response.ok) {
+          const data = await response.json();
+          resultDiv.innerHTML = `
+            <div class="success">
+              ✅ Direct API call successful<br>
+              Found ${data.results.length} movies<br>
+              First movie: ${data.results[0].title}
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = `<div class="error">❌ API call failed: ${response.status} ${response.statusText}</div>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error">❌ Network error: ${error.message}</div>`;
+      }
+    }
+
+    // Test movie search using helper function
+    async function testMovieSearch() {
+      const query = document.getElementById('searchQuery').value;
+      const resultDiv = document.getElementById('searchResult');
+      resultDiv.innerHTML = 'Searching movies...';
+
+      try {
+        const data = await makeTMDBRequest(TMDB_CONFIG.endpoints.search, {
+          query: query,
+          language: 'en-US',
+          page: 1
+        });
+
+        if (data.results && data.results.length > 0) {
+          let html = `<div class="success">✅ Found ${data.results.length} movies</div>`;
+          data.results.slice(0, 5).forEach(movie => {
+            html += `
+              <div class="movie-item">
+                <div class="movie-poster" style="background-image: url('${getImageUrl(movie.poster_path)}'); background-size: cover;"></div>
+                <div class="movie-info">
+                  <h4>${movie.title}</h4>
+                  <p>Release Date: ${movie.release_date || 'N/A'}</p>
+                  <p>Rating: ${movie.vote_average ? movie.vote_average.toFixed(1) + '/10' : 'N/A'}</p>
+                  <p>${movie.overview ? movie.overview.substring(0, 100) + '...' : 'No overview'}</p>
+                </div>
+              </div>
+            `;
+          });
+          resultDiv.innerHTML = html;
+        } else {
+          resultDiv.innerHTML = '<div class="error">❌ No movies found</div>';
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error">❌ Search failed: ${error.message}</div>`;
+      }
+    }
+
+    // Test helper functions
+    function testHelperFunctions() {
+      const resultDiv = document.getElementById('helperResult');
+
+      try {
+        // Test getImageUrl function
+        const testPath = '/test-poster.jpg';
+        const imageUrl = getImageUrl(testPath, 'w300');
+
+        resultDiv.innerHTML = `
+          <div class="success">
+            ✅ Helper functions working<br>
+            getImageUrl test: ${imageUrl}<br>
+            makeTMDBRequest function: ${typeof makeTMDBRequest}
+          </div>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error">❌ Helper function error: ${error.message}</div>`;
+      }
+    }
+
+    // Run initial tests
+    testConfig();
+  </script>
+</body>
+
+</html>

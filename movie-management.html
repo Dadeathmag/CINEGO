@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineGo - Movie Management</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .search-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .search-bar:focus {
+      border-color: #2a5298;
+    }
+
+    .movies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .movie-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .movie-poster {
+      width: 100%;
+      height: 400px;
+      background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #666;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .movie-info {
+      padding: 1.5rem;
+    }
+
+    .movie-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .movie-details {
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .movie-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: #2a5298;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: #1e3c72;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .loading {
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      margin: 2rem 0;
+    }
+
+    .no-movies {
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      margin: 2rem 0;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    .movie-search {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .movie-search input {
+      flex: 1;
+    }
+
+    .movie-results {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .movie-item {
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .movie-item:hover {
+      background: #f8f9fa;
+    }
+
+    .movie-item:last-child {
+      border-bottom: none;
+    }
+
+    .movie-poster-small {
+      width: 60px;
+      height: 90px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      margin-right: 1rem;
+      float: left;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .movie-info-small h4 {
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .movie-info-small p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .movies-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .movie-search {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="logo">🎬 CineGo Movie Management</div>
+    <div class="nav-buttons">
+      <a href="theater-dashboard.html" class="btn">← Dashboard</a>
+      <button class="btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="search-section">
+      <input type="text" class="search-bar" id="searchInput" placeholder="Search movies...">
+      <button class="btn btn-primary" onclick="openAddMovieModal()" style="margin-top: 1rem; background: #28a745;">+ Add
+        New Movie</button>
+    </div>
+
+    <div id="moviesContainer" class="movies-grid">
+      <div class="loading">Loading movies...</div>
+    </div>
+  </div>
+
+  <!-- Add Movie Modal -->
+  <div id="addMovieModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add Movie from TMDB</h2>
+        <span class="close" onclick="closeModal('addMovieModal')">&times;</span>
+      </div>
+      <div class="movie-search">
+        <input type="text" class="search-bar" id="movieSearch" placeholder="Search for movies...">
+        <button class="btn btn-primary" onclick="searchMovies()">Search</button>
+      </div>
+      <div id="movieResults" class="movie-results"></div>
+      <div id="selectedMovie" style="display: none;">
+        <h3>Selected Movie</h3>
+        <div id="selectedMovieInfo"></div>
+        <button class="btn btn-primary" onclick="addSelectedMovie()">Add to Database</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    let user = null;
+    let selectedMovie = null;
+    let movies = [];
+
+    // Check if user is logged in and has theater role
+    user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      window.location.href = 'login-register.html';
+    } else if (user.role !== 'theater') {
+      alert('Access denied. This page is only for theater managers.');
+      window.location.href = 'movies.html';
+    }
+
+    // Load movies
+    loadMovies();
+
+    // Load movies from database
+    async function loadMovies() {
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/movies`);
+        movies = await response.json();
+        displayMovies();
+      } catch (error) {
+        console.error('Error loading movies:', error);
+        document.getElementById('moviesContainer').innerHTML =
+          '<div class="no-movies">Error loading movies. Please try again.</div>';
+      }
+    }
+
+    // Display movies
+    function displayMovies() {
+      const container = document.getElementById('moviesContainer');
+
+      if (movies.length === 0) {
+        container.innerHTML = '<div class="no-movies">No movies found. Add some movies to get started!</div>';
+        return;
+      }
+
+      container.innerHTML = movies.map(movie => `
+        <div class="movie-card">
+          <div class="movie-poster" style="background-image: url('${movie.poster_path ? 'https://image.tmdb.org/t/p/w300' + movie.poster_path : 'https://via.placeholder.com/300x400?text=No+Poster'}'); background-size: cover;">
+            ${!movie.poster_path ? 'No Poster Available' : ''}
+          </div>
+          <div class="movie-info">
+            <div class="movie-title">${movie.title || 'Movie ' + movie.id}</div>
+            <div class="movie-details">
+              ${movie.release_date ? movie.release_date.substring(0, 4) : 'N/A'} • 
+              ${movie.vote_average ? movie.vote_average.toFixed(1) + '/10' : 'N/A'}<br>
+              Added: ${new Date(movie.created_at).toLocaleDateString()}
+            </div>
+            <div class="movie-actions">
+              <button class="btn-primary" onclick="viewMovieDetails(${movie.id})">View Details</button>
+              <button class="btn-danger" onclick="deleteMovie(${movie.id})">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredMovies = movies.filter(movie =>
+        movie.tmdb_id.toString().includes(searchTerm) ||
+        movie.id.toString().includes(searchTerm)
+      );
+
+      if (searchTerm === '') {
+        displayMovies();
+      } else {
+        displayFilteredMovies(filteredMovies);
+      }
+    });
+
+    // Display filtered movies
+    function displayFilteredMovies(filteredMovies) {
+      const container = document.getElementById('moviesContainer');
+
+      if (filteredMovies.length === 0) {
+        container.innerHTML = '<div class="no-movies">No movies found matching your search.</div>';
+        return;
+      }
+
+      container.innerHTML = filteredMovies.map(movie => `
+        <div class="movie-card">
+          <div class="movie-poster" style="background-image: url('https://via.placeholder.com/300x400?text=Movie+${movie.id}');">
+            Movie Poster<br>
+            <small>TMDB ID: ${movie.tmdb_id}</small>
+          </div>
+          <div class="movie-info">
+            <div class="movie-title">Movie ${movie.id}</div>
+            <div class="movie-details">
+              TMDB ID: ${movie.tmdb_id}<br>
+              Added: ${new Date(movie.created_at).toLocaleDateString()}
+            </div>
+            <div class="movie-actions">
+              <button class="btn-primary" onclick="viewMovieDetails(${movie.id})">View Details</button>
+              <button class="btn-danger" onclick="deleteMovie(${movie.id})">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Modal functions
+    function openAddMovieModal() {
+      document.getElementById('addMovieModal').style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      document.getElementById('movieResults').innerHTML = '';
+      document.getElementById('selectedMovie').style.display = 'none';
+      selectedMovie = null;
+    }
+
+    // Movie search functionality
+    async function searchMovies() {
+      const query = document.getElementById('movieSearch').value;
+      if (!query.trim()) return;
+
+      const resultsContainer = document.getElementById('movieResults');
+      resultsContainer.innerHTML = '<div class="loading">Searching movies...</div>';
+
+      try {
+        const data = await makeTMDBRequest(TMDB_CONFIG.endpoints.search, {
+          query: query,
+          language: 'en-US',
+          page: 1
+        });
+
+        if (data.results && data.results.length > 0) {
+          resultsContainer.innerHTML = data.results.map(movie => `
+            <div class="movie-item" onclick="selectMovie(${movie.id}, '${movie.title.replace(/'/g, "\\'")}', '${movie.release_date}', '${movie.overview.replace(/'/g, "\\'")}', '${movie.poster_path}', ${movie.vote_average || 0})">
+              <div class="movie-poster-small" style="background-image: url('${getImageUrl(movie.poster_path)}');"></div>
+              <div class="movie-info-small">
+                <h4>${movie.title}</h4>
+                <p>Release Date: ${movie.release_date || 'N/A'}</p>
+                <p>Rating: ${movie.vote_average ? movie.vote_average.toFixed(1) + '/10' : 'N/A'}</p>
+                <p>${movie.overview ? movie.overview.substring(0, 100) + '...' : 'No overview available'}</p>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          resultsContainer.innerHTML = '<div class="loading">No movies found.</div>';
+        }
+      } catch (error) {
+        resultsContainer.innerHTML = '<div class="error">Error searching movies. Please check your API key in config.js</div>';
+        console.error('Error searching movies:', error);
+      }
+    }
+
+    // Select movie from search results
+    function selectMovie(tmdbId, title, releaseDate, overview, posterPath, voteAverage) {
+      selectedMovie = { tmdbId, title, releaseDate, overview, posterPath, voteAverage };
+
+      document.getElementById('selectedMovie').style.display = 'block';
+      document.getElementById('selectedMovieInfo').innerHTML = `
+        <div style="display: flex; gap: 1rem;">
+          <div class="movie-poster-small" style="background-image: url('${getImageUrl(posterPath, 'w300')}'); width: 100px; height: 150px;"></div>
+          <div>
+            <h4>${title}</h4>
+            <p><strong>Release Date:</strong> ${releaseDate || 'N/A'}</p>
+            <p><strong>Overview:</strong> ${overview || 'No overview available'}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Add selected movie to database
+    async function addSelectedMovie() {
+      if (!selectedMovie) return;
+
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/movies`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tmdb_id: selectedMovie.tmdbId,
+            title: selectedMovie.title,
+            overview: selectedMovie.overview,
+            release_date: selectedMovie.releaseDate,
+            poster_path: selectedMovie.posterPath,
+            vote_average: selectedMovie.voteAverage || 0,
+            added_by: user.id
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Movie added successfully!');
+          closeModal('addMovieModal');
+          loadMovies();
+          // Notify parent window to refresh show form if it exists
+          if (window.parent && window.parent.loadShowFormData) {
+            window.parent.loadShowFormData();
+          }
+        } else if (response.status === 409) {
+          alert('This movie is already in the database!');
+          closeModal('addMovieModal');
+          loadMovies();
+        } else {
+          alert(data.error || 'Failed to add movie');
+        }
+      } catch (error) {
+        alert('Network error. Please try again.');
+        console.error('Error adding movie:', error);
+      }
+    }
+
+    // View movie details
+    function viewMovieDetails(movieId) {
+      window.location.href = `movie-details.html?id=${movieId}`;
+    }
+
+    // Delete movie
+    async function deleteMovie(movieId) {
+      if (!confirm('Are you sure you want to delete this movie?')) return;
+
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/movies/${movieId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          alert('Movie deleted successfully!');
+          loadMovies();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Failed to delete movie');
+        }
+      } catch (error) {
+        alert('Network error. Please try again.');
+        console.error('Error deleting movie:', error);
+      }
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'login-register.html';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
