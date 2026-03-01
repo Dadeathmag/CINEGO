@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineGo - Book Tickets</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .booking-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .movie-info {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .movie-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+
+    .movie-details {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .shows-section {
+      margin-bottom: 2rem;
+    }
+
+    .shows-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .show-card {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .show-card:hover {
+      border-color: #2a5298;
+      background: #f0f4ff;
+    }
+
+    .show-card.selected {
+      border-color: #2a5298;
+      background: #2a5298;
+      color: white;
+    }
+
+    .theater-name {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .showtime {
+      font-size: 1.1rem;
+    }
+
+    .seats-section {
+      margin-top: 2rem;
+    }
+
+    .screen {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .seats-grid {
+      display: grid;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .seat {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .seat.available {
+      background: #e8f5e8;
+      border-color: #4caf50;
+    }
+
+    .seat.available:hover {
+      background: #4caf50;
+      color: white;
+    }
+
+    .seat.selected {
+      background: #2a5298;
+      border-color: #2a5298;
+      color: white;
+    }
+
+    .seat.booked {
+      background: #f44336;
+      border-color: #f44336;
+      color: white;
+      cursor: not-allowed;
+    }
+
+    .seat-legend {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .legend-seat {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+    }
+
+    .booking-summary {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .summary-title {
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #2a5298;
+      border-top: 2px solid #e0e0e0;
+      padding-top: 0.5rem;
+    }
+
+    .book-btn {
+      width: 100%;
+      background: #2a5298;
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .book-btn:hover {
+      background: #1e3c72;
+    }
+
+    .book-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .shows-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+
+      .seat {
+        width: 35px;
+        height: 35px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="logo">🎬 CineGo</div>
+    <div style="display: flex; gap: 1rem;">
+      <a href="user-bookings.html" class="back-btn" style="text-decoration: none;">My Bookings</a>
+      <button class="back-btn" onclick="goBack()">← Back to Movies</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="booking-section">
+      <div class="movie-info">
+        <div class="movie-title" id="movieTitle">Loading...</div>
+        <div class="movie-details" id="movieDetails"></div>
+      </div>
+
+      <div class="shows-section">
+        <h3>Select Show Time</h3>
+        <div id="showsContainer" class="shows-grid">
+          <div class="loading">Loading shows...</div>
+        </div>
+      </div>
+
+      <div class="seats-section" id="seatsSection" style="display: none;">
+        <div class="screen">SCREEN</div>
+
+        <div class="seat-legend">
+          <div class="legend-item">
+            <div class="legend-seat" style="background: #e8f5e8; border: 2px solid #4caf50;"></div>
+            <span>Available</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-seat" style="background: #2a5298;"></div>
+            <span>Selected</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-seat" style="background: #f44336;"></div>
+            <span>Booked</span>
+          </div>
+        </div>
+
+        <div id="seatsContainer" class="seats-grid"></div>
+
+        <div class="booking-summary">
+          <div class="summary-title">Booking Summary</div>
+          <div class="summary-item">
+            <span>Theater:</span>
+            <span id="selectedTheater">-</span>
+          </div>
+          <div class="summary-item">
+            <span>Show Time:</span>
+            <span id="selectedShowtime">-</span>
+          </div>
+          <div class="summary-item">
+            <span>Selected Seats:</span>
+            <span id="selectedSeats">-</span>
+          </div>
+          <div class="summary-item">
+            <span>Price per seat:</span>
+            <span>₹200</span>
+          </div>
+          <div class="summary-item total">
+            <span>Total:</span>
+            <span id="totalPrice">₹0</span>
+          </div>
+        </div>
+
+        <button class="book-btn" id="bookBtn" onclick="confirmBooking()" disabled>
+          Book Tickets
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    let movieId = null;
+    let shows = [];
+    let selectedShow = null;
+    let selectedSeats = [];
+    let availableSeats = [];
+    let user = null;
+
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    movieId = urlParams.get('movieId');
+
+    // Check if user is logged in
+    user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      window.location.href = 'login-register.html';
+    }
+
+    if (!movieId) {
+      alert('No movie selected');
+      window.location.href = 'movies.html';
+    }
+
+    // Load movie shows
+    async function loadShows() {
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/movies/${movieId}/shows`);
+        shows = await response.json();
+        displayShows();
+      } catch (error) {
+        console.error('Error loading shows:', error);
+        document.getElementById('showsContainer').innerHTML =
+          '<div class="loading">Error loading shows. Please try again.</div>';
+      }
+    }
+
+    // Display shows
+    function displayShows() {
+      const container = document.getElementById('showsContainer');
+
+      if (shows.length === 0) {
+        container.innerHTML = '<div class="loading">No shows available for this movie.</div>';
+        return;
+      }
+
+      container.innerHTML = shows.map(show => `
+        <div class="show-card" onclick="selectShow(${show.id})">
+          <div class="theater-name">${show.theater_name}</div>
+          <div class="showtime">${new Date(show.showtime).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    // Select show
+    async function selectShow(showId) {
+      selectedShow = shows.find(s => s.id === showId);
+
+      // Update UI
+      document.querySelectorAll('.show-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      event.target.closest('.show-card').classList.add('selected');
+
+      // Load available seats
+      await loadAvailableSeats(showId);
+
+      // Show seats section
+      document.getElementById('seatsSection').style.display = 'block';
+
+      // Update summary
+      updateBookingSummary();
+    }
+
+    // Load available seats
+    async function loadAvailableSeats(showId) {
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/shows/${showId}/seats`);
+        availableSeats = await response.json();
+        displaySeats();
+      } catch (error) {
+        console.error('Error loading seats:', error);
+      }
+    }
+
+    // Display seats
+    function displaySeats() {
+      const container = document.getElementById('seatsContainer');
+
+      // Group seats by row
+      const seatsByRow = {};
+      availableSeats.forEach(seat => {
+        const row = seat.seat_number.charAt(0);
+        if (!seatsByRow[row]) {
+          seatsByRow[row] = [];
+        }
+        seatsByRow[row].push(seat);
+      });
+
+      // Create grid
+      let html = '';
+      Object.keys(seatsByRow).sort().forEach(row => {
+        html += `<div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem;">`;
+        seatsByRow[row].forEach(seat => {
+          const seatClass = seat.is_booked ? 'booked' : 'available';
+          html += `<div class="seat ${seatClass}" onclick="selectSeat(${seat.id}, '${seat.seat_number}', ${seat.is_booked})">${seat.seat_number}</div>`;
+        });
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Select seat
+    function selectSeat(seatId, seatNumber, isBooked) {
+      if (isBooked) return;
+
+      const seatElement = event.target;
+
+      if (seatElement.classList.contains('selected')) {
+        // Deselect seat
+        seatElement.classList.remove('selected');
+        selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+      } else {
+        // Select seat
+        seatElement.classList.add('selected');
+        selectedSeats.push({ id: seatId, number: seatNumber });
+      }
+
+      updateBookingSummary();
+    }
+
+    // Update booking summary
+    function updateBookingSummary() {
+      if (selectedShow) {
+        document.getElementById('selectedTheater').textContent = selectedShow.theater_name;
+        document.getElementById('selectedShowtime').textContent = new Date(selectedShow.showtime).toLocaleString();
+      }
+
+      if (selectedSeats.length > 0) {
+        document.getElementById('selectedSeats').textContent = selectedSeats.map(s => s.number).join(', ');
+        document.getElementById('totalPrice').textContent = `₹${selectedSeats.length * 200}`;
+        document.getElementById('bookBtn').disabled = false;
+      } else {
+        document.getElementById('selectedSeats').textContent = '-';
+        document.getElementById('totalPrice').textContent = '₹0';
+        document.getElementById('bookBtn').disabled = true;
+      }
+    }
+
+    // Confirm booking
+    async function confirmBooking() {
+      if (!selectedShow || selectedSeats.length === 0) {
+        alert('Please select a show and seats');
+        return;
+      }
+
+      try {
+        // Book all selected seats
+        const bookingPromises = selectedSeats.map(seat =>
+          fetch(`${CONFIG.BACKEND_URL}/api/bookings`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user_id: user.id,
+              show_id: selectedShow.id,
+              seat_id: seat.id
+            })
+          })
+        );
+
+        const responses = await Promise.all(bookingPromises);
+        const results = await Promise.all(responses.map(r => r.json()));
+
+        // Check if all bookings were successful
+        const failedBookings = results.filter((result, index) => !responses[index].ok);
+
+        if (failedBookings.length === 0) {
+          alert(`Booking successful! ${selectedSeats.length} seat(s) have been booked.`);
+          window.location.href = 'user-bookings.html';
+        } else {
+          alert(`Some bookings failed. ${selectedSeats.length - failedBookings.length} seat(s) were booked successfully.`);
+          window.location.href = 'user-bookings.html';
+        }
+      } catch (error) {
+        alert('Network error. Please try again.');
+        console.error('Booking error:', error);
+      }
+    }
+
+    // Go back
+    function goBack() {
+      window.location.href = 'movies.html';
+    }
+
+    // Load shows on page load
+    loadShows();
+  </script>
+</body>
+
+</html>

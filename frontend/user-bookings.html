@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineGo - My Bookings</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .bookings-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .bookings-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .booking-card {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .booking-card:hover {
+      border-color: #2a5298;
+      box-shadow: 0 4px 15px rgba(42, 82, 152, 0.1);
+    }
+
+    .booking-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .booking-id {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .booking-status {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-confirmed {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .booking-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .movie-info {
+      text-align: center;
+    }
+
+    .movie-poster {
+      width: 120px;
+      height: 180px;
+      background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+      border-radius: 8px;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: #666;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .movie-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+
+    .movie-details {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .show-details {
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid #2a5298;
+    }
+
+    .show-details h4 {
+      color: #333;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .show-details p {
+      color: #666;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .seat-info {
+      text-align: center;
+    }
+
+    .seat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2a5298;
+      margin-bottom: 0.5rem;
+    }
+
+    .seat-type {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .booking-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: #2a5298;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary:hover {
+      background: #1e3c72;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .loading {
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      margin: 2rem 0;
+    }
+
+    .no-bookings {
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      margin: 2rem 0;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      color: #666;
+    }
+
+    .filter-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+    }
+
+    .filter-select {
+      padding: 0.5rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .filter-select:focus {
+      border-color: #2a5298;
+    }
+
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2a5298;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .booking-content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .booking-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="logo">🎬 CineGo - My Bookings</div>
+    <div class="nav-buttons">
+      <a href="movies.html" class="btn">← Movies</a>
+      <button class="btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Stats Overview -->
+    <div class="stats-cards" id="statsCards">
+      <div class="stat-card">
+        <div class="stat-number" id="totalBookings">-</div>
+        <div class="stat-label">Total Bookings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="upcomingBookings">-</div>
+        <div class="stat-label">Upcoming</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="cancelledBookings">-</div>
+        <div class="stat-label">Cancelled</div>
+      </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label class="filter-label">Status</label>
+          <select class="filter-select" id="statusFilter" onchange="filterBookings()">
+            <option value="all">All Bookings</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Sort By</label>
+          <select class="filter-select" id="sortFilter" onchange="filterBookings()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="showtime">Show Time</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <button class="btn btn-primary" onclick="refreshBookings()">Refresh</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings Section -->
+    <div class="bookings-section">
+      <h2 class="section-title">My Bookings</h2>
+      <div id="bookingsContainer" class="bookings-grid">
+        <div class="loading">Loading your bookings...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel Booking Modal -->
+  <div id="cancelModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Cancel Booking</h2>
+        <span class="close" onclick="closeModal('cancelModal')">&times;</span>
+      </div>
+      <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('cancelModal')">Keep Booking</button>
+        <button class="btn btn-danger" onclick="confirmCancelBooking()">Cancel Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    let user = null;
+    let bookings = [];
+    let filteredBookings = [];
+    let bookingToCancel = null;
+
+    // Check if user is logged in
+    user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      window.location.href = 'login-register.html';
+    }
+
+    // Load user bookings
+    loadUserBookings();
+
+    // Load user bookings from database
+    async function loadUserBookings() {
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/bookings/user/${user.id}`);
+        bookings = await response.json();
+        filteredBookings = [...bookings];
+        displayBookings();
+        updateStats();
+      } catch (error) {
+        console.error('Error loading bookings:', error);
+        document.getElementById('bookingsContainer').innerHTML =
+          '<div class="no-bookings">Error loading bookings. Please try again.</div>';
+      }
+    }
+
+    // Display bookings
+    function displayBookings() {
+      const container = document.getElementById('bookingsContainer');
+
+      if (filteredBookings.length === 0) {
+        container.innerHTML = '<div class="no-bookings">No bookings found. <a href="movies.html">Book a movie now!</a></div>';
+        return;
+      }
+
+      container.innerHTML = filteredBookings.map(booking => {
+        const showTime = new Date(booking.showtime);
+        const isUpcoming = showTime > new Date();
+        const isCancelled = booking.status === 'cancelled';
+
+        return `
+          <div class="booking-card">
+            <div class="booking-header">
+              <div class="booking-id">Booking #${booking.id}</div>
+              <div class="booking-status ${isCancelled ? 'status-cancelled' : 'status-confirmed'}">
+                ${isCancelled ? 'Cancelled' : (isUpcoming ? 'Confirmed' : 'Completed')}
+              </div>
+            </div>
+            
+            <div class="booking-content">
+              <div class="movie-info">
+                <div class="movie-poster" style="background-image: url('https://via.placeholder.com/120x180?text=Movie+${booking.tmdb_id}');">
+                  Movie Poster
+                </div>
+                <div class="movie-title">Movie ${booking.tmdb_id}</div>
+                <div class="movie-details">TMDB ID: ${booking.tmdb_id}</div>
+              </div>
+              
+              <div class="show-details">
+                <h4>Show Details</h4>
+                <p><strong>Theater:</strong> ${booking.theater_name}</p>
+                <p><strong>Date & Time:</strong> ${showTime.toLocaleString()}</p>
+                <p><strong>Booked On:</strong> ${new Date(booking.booked_at).toLocaleString()}</p>
+              </div>
+              
+              <div class="seat-info">
+                <div class="seat-number">${booking.seat_number}</div>
+                <div class="seat-type">${booking.seat_type}</div>
+                <div class="booking-actions">
+                  ${!isCancelled && isUpcoming ? `
+                    <button class="btn btn-danger" onclick="cancelBooking(${booking.id})">Cancel</button>
+                  ` : ''}
+                  <button class="btn btn-secondary" onclick="viewBookingDetails(${booking.id})">Details</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Update statistics
+    function updateStats() {
+      const now = new Date();
+      const total = bookings.length;
+      const upcoming = bookings.filter(b => new Date(b.showtime) > now && b.status !== 'cancelled').length;
+      const cancelled = bookings.filter(b => b.status === 'cancelled').length;
+
+      document.getElementById('totalBookings').textContent = total;
+      document.getElementById('upcomingBookings').textContent = upcoming;
+      document.getElementById('cancelledBookings').textContent = cancelled;
+    }
+
+    // Filter bookings
+    function filterBookings() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const sortFilter = document.getElementById('sortFilter').value;
+      const now = new Date();
+
+      // Filter by status
+      filteredBookings = bookings.filter(booking => {
+        const showTime = new Date(booking.showtime);
+        const isUpcoming = showTime > now;
+        const isCancelled = booking.status === 'cancelled';
+
+        switch (statusFilter) {
+          case 'upcoming':
+            return isUpcoming && !isCancelled;
+          case 'past':
+            return !isUpcoming && !isCancelled;
+          case 'cancelled':
+            return isCancelled;
+          default:
+            return true;
+        }
+      });
+
+      // Sort bookings
+      filteredBookings.sort((a, b) => {
+        switch (sortFilter) {
+          case 'oldest':
+            return new Date(a.booked_at) - new Date(b.booked_at);
+          case 'showtime':
+            return new Date(a.showtime) - new Date(b.showtime);
+          default: // newest
+            return new Date(b.booked_at) - new Date(a.booked_at);
+        }
+      });
+
+      displayBookings();
+    }
+
+    // Refresh bookings
+    function refreshBookings() {
+      loadUserBookings();
+    }
+
+    // Cancel booking
+    function cancelBooking(bookingId) {
+      bookingToCancel = bookingId;
+      document.getElementById('cancelModal').style.display = 'block';
+    }
+
+    // Confirm cancel booking
+    async function confirmCancelBooking() {
+      if (!bookingToCancel) return;
+
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/bookings/${bookingToCancel}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Booking cancelled successfully!');
+          closeModal('cancelModal');
+          loadUserBookings();
+        } else {
+          alert(data.error || 'Failed to cancel booking');
+        }
+      } catch (error) {
+        alert('Network error. Please try again.');
+        console.error('Error cancelling booking:', error);
+      }
+    }
+
+    // View booking details
+    function viewBookingDetails(bookingId) {
+      const booking = bookings.find(b => b.id === bookingId);
+      if (booking) {
+        const showTime = new Date(booking.showtime);
+        const bookedAt = new Date(booking.booked_at);
+
+        alert(`Booking Details:\n\n` +
+          `Booking ID: ${booking.id}\n` +
+          `Movie: Movie ${booking.tmdb_id}\n` +
+          `Theater: ${booking.theater_name}\n` +
+          `Seat: ${booking.seat_number} (${booking.seat_type})\n` +
+          `Show Time: ${showTime.toLocaleString()}\n` +
+          `Booked On: ${bookedAt.toLocaleString()}\n` +
+          `Status: ${booking.status || 'Confirmed'}`);
+      }
+    }
+
+    // Modal functions
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      bookingToCancel = null;
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'login-register.html';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
