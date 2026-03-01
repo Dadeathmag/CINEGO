@@ -1,6 +1,7 @@
 // Global Application Configuration
 const CONFIG = {
-  BACKEND_URL: 'http://localhost:3000'
+  //BACKEND_URL: 'http://localhost:3000'
+  BACKEND_URL: 'https://cinego-7eun.onrender.com'
 };
 
 // TMDB API Configuration
@@ -66,3 +67,4 @@ async function makeTMDBRequest(endpoint, params = {}) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { CONFIG, TMDB_CONFIG, getImageUrl, makeTMDBRequest };
 }
+
