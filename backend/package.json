@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "reset-db": "node resetDatabase.js",
+    "clear-db": "node -e \"import('./clearDatabase.js').then(m => m.clearDatabase())\"",
+    "add-sample": "node -e \"import('./clearDatabase.js').then(m => m.regenerateSampleData())\"",
+    "seed": "node databaseSeeder.js",
+    "seed:clear": "node databaseSeeder.js clear",
+    "seed:reset": "node databaseSeeder.js clear-and-seed",
+    "seed:stats": "node databaseSeeder.js stats"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  }
+}
